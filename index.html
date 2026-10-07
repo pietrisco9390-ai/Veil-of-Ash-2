@@ -2,353 +2,958 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Veil of Ash</title>
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#030506">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Veil of Ash — Capitolo I</title>
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
 html,body{
-  margin:0;width:100%;height:100%;overflow:hidden;
-  background:#030506;color:#eee;
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#020405;
+  color:#e9ebe7;
   font-family:Georgia,serif;
 }
-body{touch-action:none}
+body{
+  touch-action:none;
+}
+button{
+  font:inherit;
+  color:inherit;
+}
 #game{
-  position:fixed;inset:0;
-  width:100%;height:100%;
+  position:fixed;
+  inset:0;
+  overflow:hidden;
   background:
-    radial-gradient(circle at 50% 45%,#26302c 0%,#101614 38%,#030506 100%);
+    radial-gradient(circle at 50% 45%,#28322e 0%,#111816 35%,#030506 100%);
+}
+/* ---------- ATMOSFERA ---------- */
+#sky{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 78% 16%,rgba(190,205,196,.10),transparent 18%),
+    linear-gradient(to bottom,#101718 0%,#0b1110 45%,#050807 100%);
+}
+#moon{
+  position:absolute;
+  width:110px;
+  height:110px;
+  right:12%;
+  top:11%;
+  border-radius:50%;
+  background:#c8d0c8;
+  opacity:.16;
+  filter:blur(2px);
+  box-shadow:0 0 55px rgba(200,215,207,.16);
 }
 #fog{
-  position:absolute;inset:-20%;
-  background:
-    radial-gradient(ellipse at 40% 50%,rgba(190,210,205,.12),transparent 35%),
-    radial-gradient(ellipse at 70% 30%,rgba(150,170,165,.08),transparent 30%);
-  animation:fog 12s ease-in-out infinite alternate;
+  position:absolute;
+  inset:-30%;
   pointer-events:none;
+  opacity:.55;
+  background:
+    radial-gradient(ellipse at 30% 50%,rgba(190,210,205,.15),transparent 30%),
+    radial-gradient(ellipse at 75% 65%,rgba(170,190,186,.11),transparent 32%),
+    radial-gradient(ellipse at 45% 20%,rgba(210,220,215,.07),transparent 25%);
+  animation:fogMove 18s ease-in-out infinite alternate;
 }
-@keyframes fog{
-  from{transform:translateX(-3%)}
-  to{transform:translateX(4%)}
+@keyframes fogMove{
+  from{transform:translate3d(-4%,-1%,0) scale(1)}
+  to{transform:translate3d(5%,2%,0) scale(1.06)}
 }
 #vignette{
-  position:absolute;inset:0;
+  position:absolute;
+  inset:0;
   pointer-events:none;
-  background:radial-gradient(circle,transparent 25%,rgba(0,0,0,.82) 100%);
+  background:
+    radial-gradient(circle at center,
+      transparent 20%,
+      rgba(0,0,0,.20) 58%,
+      rgba(0,0,0,.88) 100%);
+  z-index:20;
 }
+#grain{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.055;
+  z-index:21;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,.08) 0px,
+      rgba(255,255,255,.08) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+  animation:grain .18s steps(2) infinite;
+}
+@keyframes grain{
+  0%{transform:translate(0,0)}
+  50%{transform:translate(-2px,1px)}
+  100%{transform:translate(2px,-1px)}
+}
+/* ---------- UI ---------- */
 #title{
   position:absolute;
-  top:24px;left:0;width:100%;
-  text-align:center;
-  letter-spacing:7px;
-  font-size:12px;
-  opacity:.65;
+  top:calc(18px + env(safe-area-inset-top));
+  left:20px;
+  z-index:40;
+  font-family:Arial,sans-serif;
+  font-size:10px;
+  letter-spacing:4px;
+  opacity:.62;
 }
 #objective{
   position:absolute;
-  left:20px;bottom:25px;
-  font-size:14px;
-  text-shadow:0 2px 8px #000;
-  max-width:75%;
+  left:20px;
+  bottom:calc(26px + env(safe-area-inset-bottom));
+  z-index:40;
+  max-width:65%;
+  font-family:Arial,sans-serif;
+  font-size:13px;
+  line-height:1.4;
+  text-shadow:0 2px 12px #000;
+}
+#objective::before{
+  content:"";
+  display:inline-block;
+  width:6px;
+  height:6px;
+  margin:0 8px 2px 0;
+  border-radius:50%;
+  background:#b9d2ce;
+  box-shadow:0 0 12px #b9d2ce;
 }
 #message{
   position:absolute;
-  top:16%;
+  top:15%;
   left:50%;
+  width:84%;
   transform:translateX(-50%);
-  width:85%;
+  z-index:45;
   text-align:center;
   font-size:20px;
-  line-height:1.5;
+  line-height:1.55;
   opacity:0;
-  transition:opacity 1s;
-  text-shadow:0 2px 15px #000;
+  transition:opacity 1.1s ease;
+  text-shadow:0 2px 18px #000;
 }
+#inventory{
+  position:absolute;
+  top:calc(55px + env(safe-area-inset-top));
+  right:20px;
+  z-index:40;
+  min-width:100px;
+  padding:8px 10px;
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:9px;
+  background:rgba(0,0,0,.35);
+  font:11px Arial,sans-serif;
+  letter-spacing:1px;
+  opacity:.72;
+  backdrop-filter:blur(6px);
+}
+/* ---------- MONDO ---------- */
+#world{
+  position:absolute;
+  inset:0;
+  transform:translate3d(0,0,0);
+  will-change:transform;
+}
+#ground{
+  position:absolute;
+  left:-50%;
+  top:-50%;
+  width:200%;
+  height:200%;
+  background:
+    radial-gradient(ellipse at center,
+      #1c2925 0%,
+      #101715 28%,
+      #080c0b 58%,
+      #030505 100%);
+}
+.path{
+  position:absolute;
+  width:180px;
+  height:900px;
+  left:50%;
+  top:20%;
+  transform:translateX(-50%) rotate(4deg);
+  background:
+    linear-gradient(90deg,
+      transparent,
+      rgba(74,78,67,.40) 25%,
+      rgba(91,91,76,.48) 50%,
+      rgba(63,68,59,.35) 75%,
+      transparent);
+  filter:blur(2px);
+}
+/* ---------- ALBERI ---------- */
+.tree{
+  position:absolute;
+  width:90px;
+  height:150px;
+}
+.tree .crown{
+  position:absolute;
+  width:75px;
+  height:75px;
+  left:7px;
+  top:0;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 35% 25%,#26322e,#111816 65%,#070a09);
+  box-shadow:0 12px 30px #0008;
+}
+.tree .trunk{
+  position:absolute;
+  width:15px;
+  height:90px;
+  left:38px;
+  top:54px;
+  background:linear-gradient(90deg,#070908,#242a26,#080a09);
+}
+/* ---------- CASA ---------- */
+#house{
+  position:absolute;
+  width:230px;
+  height:160px;
+  left:50%;
+  top:38%;
+  transform:translate(-50%,-50%);
+  background:
+    linear-gradient(90deg,#111514,#1a1d1b,#101312);
+  border:1px solid #3a403c;
+  box-shadow:0 22px 70px #000;
+}
+#roof{
+  position:absolute;
+  left:-25px;
+  top:-78px;
+  width:280px;
+  height:95px;
+  background:
+    linear-gradient(145deg,#0d1010,#171a19 50%,#090b0b);
+  clip-path:polygon(50% 0,100% 100%,0 100%);
+}
+.window{
+  position:absolute;
+  top:45px;
+  width:42px;
+  height:47px;
+  background:#8c8965;
+  border:3px solid #171b19;
+  box-shadow:
+    0 0 15px rgba(185,174,105,.55),
+    inset 0 0 10px #fff2;
+}
+.window::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:0;
+  bottom:0;
+  width:2px;
+  background:#252820;
+}
+.window.left{left:30px}
+.window.right{right:30px}
+#door{
+  position:absolute;
+  bottom:0;
+  left:94px;
+  width:42px;
+  height:82px;
+  background:linear-gradient(90deg,#060707,#171918,#050606);
+  border:1px solid #292d2b;
+}
+#door::after{
+  content:"";
+  position:absolute;
+  right:6px;
+  top:43px;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:#aaa477;
+}
+/* ---------- TORCIA ---------- */
+#torchLight{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:420px;
+  height:420px;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+  z-index:15;
+  border-radius:50%;
+  background:
+    radial-gradient(circle,
+      rgba(244,238,194,.18) 0%,
+      rgba(220,215,175,.09) 23%,
+      transparent 66%);
+  mix-blend-mode:screen;
+  transition:opacity .3s;
+}
+#torchButton{
+  position:absolute;
+  right:24px;
+  bottom:calc(155px + env(safe-area-inset-bottom));
+  z-index:50;
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(0,0,0,.48);
+  box-shadow:0 0 20px rgba(0,0,0,.6);
+  font-size:22px;
+}
+#torchButton.off{
+  opacity:.45;
+}
+/* ---------- JOYSTICK ---------- */
+#joystick{
+  position:absolute;
+  left:22px;
+  bottom:calc(22px + env(safe-area-inset-bottom));
+  z-index:50;
+  width:118px;
+  height:118px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.15);
+  background:rgba(0,0,0,.20);
+  backdrop-filter:blur(4px);
+}
+#knob{
+  position:absolute;
+  width:48px;
+  height:48px;
+  left:35px;
+  top:35px;
+  border-radius:50%;
+  background:rgba(210,220,215,.15);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 0 20px rgba(0,0,0,.35);
+}
+/* ---------- INTERAZIONE ---------- */
+#interact{
+  position:absolute;
+  right:30px;
+  bottom:calc(225px + env(safe-area-inset-bottom));
+  z-index:50;
+  width:62px;
+  height:62px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.48);
+  font-size:22px;
+  display:none;
+}
+/* ---------- INDIZIO ---------- */
+#note{
+  position:absolute;
+  width:25px;
+  height:18px;
+  left:61%;
+  top:54%;
+  z-index:10;
+  background:#d5cda9;
+  box-shadow:0 0 16px rgba(215,205,160,.35);
+  transform:rotate(-5deg);
+  display:none;
+}
+#note::after{
+  content:"";
+  position:absolute;
+  left:4px;
+  right:4px;
+  top:6px;
+  height:2px;
+  background:#777258;
+  box-shadow:0 4px #777258;
+}
+/* ---------- OMBRA ---------- */
+#creature{
+  position:absolute;
+  left:74%;
+  top:28%;
+  width:48px;
+  height:135px;
+  z-index:12;
+  opacity:0;
+  filter:blur(2px);
+  transition:opacity 3s;
+}
+#creature::before{
+  content:"";
+  position:absolute;
+  left:4px;
+  top:22px;
+  width:40px;
+  height:105px;
+  border-radius:50% 50% 35% 35%;
+  background:#000;
+  box-shadow:0 0 25px #000;
+}
+#creature::after{
+  content:"";
+  position:absolute;
+  left:14px;
+  top:15px;
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:#d5ddd5;
+  box-shadow:15px 0 #d5ddd5;
+  opacity:.65;
+  animation:eyes 3s infinite;
+}
+@keyframes eyes{
+  0%,70%,100%{opacity:.25}
+  75%{opacity:.9}
+}
+/* ---------- START ---------- */
 #start{
   position:absolute;
   inset:0;
+  z-index:100;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  background:rgba(0,0,0,.72);
-  z-index:20;
+  text-align:center;
+  padding:30px;
+  background:
+    radial-gradient(circle at 50% 45%,rgba(34,46,42,.4),#020304 70%);
   transition:opacity 1.5s;
 }
 #start h1{
   margin:0;
-  font-size:36px;
-  letter-spacing:9px;
+  font-size:38px;
   font-weight:400;
+  letter-spacing:9px;
 }
-#start p{
-  margin:15px 0 45px;
-  font-size:12px;
+#start .chapter{
+  margin:14px 0 42px;
+  font:11px Arial,sans-serif;
   letter-spacing:4px;
-  opacity:.55;
+  opacity:.52;
 }
-button{
-  border:1px solid #aaa8;
-  background:#090c0cdd;
-  color:#eee;
-  padding:15px 30px;
-  border-radius:4px;
-  font:inherit;
+#start button{
+  padding:16px 26px;
+  border-radius:5px;
+  border:1px solid rgba(255,255,255,.28);
+  background:rgba(8,10,10,.72);
   letter-spacing:3px;
 }
-#touch{
-  position:absolute;
-  right:20px;
-  bottom:25px;
-  width:110px;height:110px;
-  border:1px solid #ffffff25;
-  border-radius:50%;
-  background:#0003;
-  z-index:5;
-}
-#knob{
-  position:absolute;
-  width:42px;height:42px;
-  left:34px;top:34px;
-  border-radius:50%;
-  background:#ffffff25;
-}
-#interact{
-  position:absolute;
-  right:30px;
-  bottom:155px;
-  width:58px;height:58px;
-  border-radius:50%;
-  border:1px solid #ffffff44;
-  background:#050707aa;
-  color:#fff;
-  font-size:20px;
-  display:none;
-}
-#flash{
-  position:absolute;inset:0;
-  background:#fff;
-  opacity:0;
-  pointer-events:none;
-}
-#shadow{
-  position:absolute;
-  width:42px;height:125px;
-  background:rgba(0,0,0,.7);
-  border-radius:50%;
-  left:72%;top:31%;
-  opacity:0;
-  filter:blur(3px);
-  animation:shadowMove 5s infinite ease-in-out;
-}
-@keyframes shadowMove{
-  0%,100%{transform:translateX(0) scale(.9)}
-  50%{transform:translateX(-35px) scale(1.05)}
-}
-.house{
-  position:absolute;
-  width:180px;height:120px;
-  left:50%;top:43%;
-  transform:translate(-50%,-50%);
-  background:#151817;
-  border:1px solid #323836;
-  box-shadow:0 0 50px #000;
-}
-.house:before{
-  content:"";
-  position:absolute;
-  left:-20px;top:-65px;
-  border-left:110px solid transparent;
-  border-right:110px solid transparent;
-  border-bottom:70px solid #0d1010;
-}
-.window{
-  position:absolute;
-  width:34px;height:40px;
-  top:35px;
-  background:#968e68;
-  box-shadow:0 0 20px #aaa36a;
-}
-.w1{left:25px}
-.w2{right:25px}
-.door{
-  position:absolute;
-  bottom:0;left:72px;
-  width:36px;height:65px;
-  background:#080909;
-}
-.note{
-  position:absolute;
-  width:16px;height:10px;
-  background:#d7d0b0;
-  left:62%;top:57%;
-  box-shadow:0 0 12px #aaa;
-  opacity:0;
-}
+/* ---------- FINALE ---------- */
 #ending{
-  position:absolute;inset:0;
-  background:#000;
+  position:absolute;
+  inset:0;
+  z-index:120;
   display:none;
   align-items:center;
   justify-content:center;
   flex-direction:column;
-  z-index:30;
   text-align:center;
-  padding:30px;
+  padding:35px;
+  background:#000;
 }
 #ending h2{
+  margin:0 0 25px;
   font-weight:400;
-  letter-spacing:5px;
+  letter-spacing:6px;
+  font-size:25px;
 }
 #ending p{
-  max-width:400px;
-  line-height:1.7;
-  opacity:.7;
+  max-width:420px;
+  font-size:17px;
+  line-height:1.75;
+  opacity:.72;
+}
+#restart{
+  margin-top:30px;
+  padding:13px 22px;
+  border:1px solid #555;
+  background:#080909;
+  border-radius:5px;
+  letter-spacing:2px;
+}
+/* ---------- FLASH ---------- */
+#flash{
+  position:absolute;
+  inset:0;
+  z-index:110;
+  pointer-events:none;
+  background:#d9ded9;
+  opacity:0;
+}
+/* ---------- ACCESSIBILITÀ ---------- */
+@media (min-width:800px){
+  #game{
+    max-width:900px;
+    margin:auto;
+  }
 }
 </style>
 </head>
 <body>
 <div id="game">
-  <div id="title">VEIL OF ASH</div>
-  <div class="house">
-    <div class="window w1"></div>
-    <div class="window w2"></div>
-    <div class="door"></div>
+  <div id="sky"></div>
+  <div id="moon"></div>
+  <div id="world">
+    <div id="ground"></div>
+    <div class="path"></div>
+    <div class="tree" style="left:5%;top:14%">
+      <div class="crown"></div><div class="trunk"></div>
+    </div>
+    <div class="tree" style="left:16%;top:57%">
+      <div class="crown"></div><div class="trunk"></div>
+    </div>
+    <div class="tree" style="right:5%;top:20%">
+      <div class="crown"></div><div class="trunk"></div>
+    </div>
+    <div class="tree" style="right:17%;top:64%">
+      <div class="crown"></div><div class="trunk"></div>
+    </div>
+    <div id="house">
+      <div id="roof"></div>
+      <div class="window left"></div>
+      <div class="window right"></div>
+      <div id="door"></div>
+    </div>
+    <div id="note"></div>
+    <div id="creature"></div>
   </div>
-  <div class="note"></div>
-  <div id="shadow"></div>
+  <div id="torchLight"></div>
   <div id="fog"></div>
   <div id="vignette"></div>
+  <div id="grain"></div>
+  <div id="title">VEIL OF ASH · I</div>
+  <div id="inventory">
+    INVENTARIO · <span id="itemCount">0</span>/3
+  </div>
   <div id="message"></div>
   <div id="objective">
     Raggiungi la casa.
   </div>
-  <div id="touch">
+  <div id="joystick">
     <div id="knob"></div>
   </div>
-  <button id="interact">◉</button>
+  <button id="torchButton" aria-label="Torcia">🔦</button>
+  <button id="interact" aria-label="Interagisci">◉</button>
   <div id="flash"></div>
 </div>
 <div id="start">
   <h1>VEIL OF ASH</h1>
-  <p>CAPITOLO I · LA CASA</p>
-  <button id="startBtn">TOCCA PER INIZIARE</button>
+  <div class="chapter">CAPITOLO I · LA CASA</div>
+  <button id="startButton">TOCCA PER INIZIARE</button>
 </div>
 <div id="ending">
   <h2>NON RISPONDERE</h2>
   <p>
     Elena si volta lentamente.<br><br>
-    La voce arriva dalla foresta.
+    La foresta è immobile.
+    Poi sente una voce.
+    <br><br>
     È la voce di suo fratello.
     <br><br>
     Ma suo fratello è morto da sette anni.
   </p>
+  <button id="restart">RICOMINCIA</button>
 </div>
 <script>
-const objective=document.getElementById("objective");
-const message=document.getElementById("message");
-const start=document.getElementById("start");
-const startBtn=document.getElementById("startBtn");
-const touch=document.getElementById("touch");
-const knob=document.getElementById("knob");
-const interact=document.getElementById("interact");
-const shadow=document.getElementById("shadow");
-const note=document.querySelector(".note");
-const flash=document.getElementById("flash");
-const ending=document.getElementById("ending");
-let started=false;
-let stage=0;
-let x=0,y=0;
-let touching=false;
-let lastX=0,lastY=0;
-function say(text,time=3000){
-  message.innerHTML=text.replace(/\n/g,"<br>");
-  message.style.opacity=1;
-  setTimeout(()=>message.style.opacity=0,time);
+"use strict";
+/* =========================================================
+   VEIL OF ASH 0.2
+   Prototipo mobile standalone
+   ========================================================= */
+const $ = id => document.getElementById(id);
+const startScreen = $("start");
+const startButton = $("startButton");
+const joystick = $("joystick");
+const knob = $("knob");
+const torchButton = $("torchButton");
+const interactButton = $("interact");
+const objective = $("objective");
+const message = $("message");
+const inventory = $("itemCount");
+const torchLight = $("torchLight");
+const creature = $("creature");
+const note = $("note");
+const flash = $("flash");
+const ending = $("ending");
+const restart = $("restart");
+const world = $("world");
+let gameStarted = false;
+let stage = 0;
+let tension = 0;
+let torchOn = true;
+let items = 0;
+let player = {
+  x: 0,
+  y: 0
+};
+let joystickActive = false;
+let lastTouchX = 0;
+let lastTouchY = 0;
+let messageTimer = null;
+let lastTime = performance.now();
+/* ---------- AUDIO ---------- */
+let audioContext = null;
+let ambientGain = null;
+let heartbeatTimer = null;
+function startAudio(){
+  if(audioContext) return;
+  try{
+    audioContext =
+      new (window.AudioContext || window.webkitAudioContext)();
+    ambientGain = audioContext.createGain();
+    ambientGain.gain.value = 0.018;
+    ambientGain.connect(audioContext.destination);
+    const osc = audioContext.createOscillator();
+    osc.type = "sine";
+    osc.frequency.value = 48;
+    const gain = audioContext.createGain();
+    gain.gain.value = 0.012;
+    osc.connect(gain);
+    gain.connect(ambientGain);
+    osc.start();
+  }catch(e){
+    /* Audio non disponibile: il gioco continua */
+  }
 }
-function startGame(){
-  started=true;
-  start.style.opacity=0;
-  setTimeout(()=>start.remove(),1500);
-  say("27 anni dopo…",2500);
+function tone(freq=120,duration=.12,volume=.035){
+  if(!audioContext) return;
+  const osc = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  osc.type = "sine";
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(volume,audioContext.currentTime);
+  gain.gain.exponentialRampToValueAtTime(
+    .001,
+    audioContext.currentTime + duration
+  );
+  osc.connect(gain);
+  gain.connect(audioContext.destination);
+  osc.start();
+  osc.stop(audioContext.currentTime + duration);
 }
-startBtn.addEventListener("click",startGame);
+function heartbeat(){
+  if(!audioContext || heartbeatTimer) return;
+  heartbeatTimer = setInterval(()=>{
+    if(tension < 55) return;
+    tone(70,.08,.025);
+    setTimeout(()=>{
+      tone(55,.08,.018);
+    },130);
+  },Math.max(1700,3400-tension*20));
+}
+/* ---------- MESSAGGI ---------- */
+function say(text,duration=3000){
+  clearTimeout(messageTimer);
+  message.innerHTML =
+    text.replace(/\n/g,"<br>");
+  message.style.opacity="1";
+  messageTimer=setTimeout(()=>{
+    message.style.opacity="0";
+  },duration);
+}
+/* ---------- OBIETTIVO ---------- */
+function setObjective(text){
+  objective.textContent=text;
+}
+/* ---------- INVENTARIO ---------- */
+function addItem(){
+  if(items>=3) return;
+  items++;
+  inventory.textContent=items;
+  tone(360,.18,.035);
+}
+/* ---------- TORCIA ---------- */
+function toggleTorch(){
+  torchOn=!torchOn;
+  torchLight.style.opacity =
+    torchOn ? "1" : ".05";
+  torchButton.classList.toggle(
+    "off",
+    !torchOn
+  );
+  if(torchOn){
+    tone(420,.08,.025);
+  }else{
+    tone(110,.12,.02);
+  }
+}
+torchButton.addEventListener("click",toggleTorch);
+/* ---------- MOVIMENTO ---------- */
 function move(dx,dy){
-  if(!started)return;
-  x+=dx;
-  y+=dy;
-  const distance=Math.sqrt(x*x+y*y);
-  if(stage===0 && distance>140){
-    stage=1;
-    objective.textContent="La porta è aperta. Entra.";
-    interact.style.display="block";
-    say("La porta è già aperta.",3000);
-  }
-  if(stage===1 && distance>260){
-    stage=2;
-    interact.style.display="none";
-    objective.textContent="Trova qualcosa che apparteneva a tuo fratello.";
-    note.style.opacity=1;
-    say("Dentro la casa senti un rumore al piano superiore.",3500);
-  }
-  if(stage===2 && distance>390){
-    stage=3;
-    objective.textContent="Esamina il foglio.";
-    interact.style.display="block";
-    shadow.style.opacity=.35;
-    say("Qualcuno ti sta osservando.",3500);
-  }
+  if(!gameStarted) return;
+  player.x += dx;
+  player.y += dy;
+  tension =
+    Math.min(
+      100,
+      tension +
+      Math.sqrt(dx*dx+dy*dy)*.012
+    );
+  world.style.transform =
+    `translate3d(${-player.x}px,${-player.y}px,0)`;
+  checkProgress();
 }
-touch.addEventListener("touchstart",e=>{
-  touching=true;
-  const t=e.touches[0];
-  lastX=t.clientX;
-  lastY=t.clientY;
-},{passive:true});
-touch.addEventListener("touchmove",e=>{
-  if(!touching)return;
-  const t=e.touches[0];
-  const dx=t.clientX-lastX;
-  const dy=t.clientY-lastY;
-  knob.style.transform=`translate(${Math.max(-28,Math.min(28,dx))}px,
-    ${Math.max(-28,Math.min(28,dy))}px)`;
-  move(dx*.65,dy*.65);
-  lastX=t.clientX;
-  lastY=t.clientY;
-},{passive:true});
-touch.addEventListener("touchend",()=>{
-  touching=false;
-  knob.style.transform="translate(0,0)";
-});
-interact.addEventListener("click",()=>{
-  if(stage===1){
-    stage=2;
-    interact.style.display="none";
-    note.style.opacity=1;
-    objective.textContent="Trova il foglio sul tavolo.";
-    say("La casa odora di cenere.",3000);
+/* ---------- PROGRESSIONE ---------- */
+function checkProgress(){
+  const distance =
+    Math.sqrt(
+      player.x*player.x+
+      player.y*player.y
+    );
+  /* FASE 0 */
+  if(stage===0 && distance>120){
+    stage=1;
+    tension=15;
+    setObjective(
+      "La porta è aperta. Avvicinati."
+    );
+    interactButton.style.display="block";
+    say(
+      "La casa è esattamente come la ricordavi.\n" +
+      "Quasi.",
+      3500
+    );
+    tone(95,.3,.025);
   }
-  else if(stage===3){
+  /* FASE 1 */
+  if(stage===1 && distance>250){
+    stage=2;
+    tension=30;
+    interactButton.style.display="none";
+    note.style.display="block";
+    setObjective(
+      "Trova qualcosa appartenuto a tuo fratello."
+    );
+    say(
+      "Un rumore arriva dal piano superiore.",
+      3200
+    );
+    addItem();
+    heartbeat();
+  }
+  /* FASE 2 */
+  if(stage===2 && distance>380){
+    stage=3;
+    tension=48;
+    note.style.display="block";
+    interactButton.style.display="block";
+    setObjective(
+      "Esamina il foglio sul tavolo."
+    );
+    say(
+      "Sul foglio c'è una sola frase:\n" +
+      "NON RISPONDERE.",
+      4000
+    );
+    creature.style.opacity=".18";
+    addItem();
+  }
+  /* FASE 3 */
+  if(stage===3 && distance>490){
     stage=4;
-    interact.style.display="none";
-    flash.style.opacity=.8;
+    tension=72;
+    creature.style.opacity=".48";
+    setObjective(
+      "Qualcuno è nella foresta."
+    );
+    interactButton.style.display="none";
+    say(
+      "Hai sentito il tuo nome?",
+      3000
+    );
     setTimeout(()=>{
-      flash.style.opacity=0;
-      shadow.style.opacity=.85;
-      objective.textContent="NON RISPONDERE.";
-      say("«Elena…»",2200);
-    },500);
+      say(
+        "Elena...",
+        2200
+      );
+    },3500);
     setTimeout(()=>{
-      ending.style.display="flex";
+      creature.style.opacity=".8";
     },5000);
   }
+}
+/* ---------- INTERAZIONE ---------- */
+interactButton.addEventListener("click",()=>{
+  if(stage===1){
+    stage=2;
+    tension=28;
+    interactButton.style.display="none";
+    note.style.display="block";
+    setObjective(
+      "Trova il foglio sul tavolo."
+    );
+    say(
+      "La porta si apre con un leggero scricchiolio.\n" +
+      "Dentro fa molto più freddo.",
+      3500
+    );
+    addItem();
+    return;
+  }
+  if(stage===3){
+    stage=4;
+    tension=70;
+    interactButton.style.display="none";
+    flash.style.opacity=".65";
+    setTimeout(()=>{
+      flash.style.opacity="0";
+    },180);
+    creature.style.opacity="1";
+    setObjective(
+      "NON RISPONDERE."
+    );
+    say(
+      "«Elena...»",
+      2300
+    );
+    tone(48,.7,.055);
+    setTimeout(()=>{
+      say(
+        "La voce arriva proprio dietro di te.",
+        3000
+      );
+    },2600);
+    setTimeout(()=>{
+      ending.style.display="flex";
+    },6500);
+  }
 });
-document.addEventListener("keydown",e=>{
-  const s=25;
-  if(e.key==="ArrowUp"||e.key==="w")move(0,-s);
-  if(e.key==="ArrowDown"||e.key==="s")move(0,s);
-  if(e.key==="ArrowLeft"||e.key==="a")move(-s,0);
-  if(e.key==="ArrowRight"||e.key==="d")move(s,0);
+/* ---------- JOYSTICK ---------- */
+joystick.addEventListener(
+  "touchstart",
+  event=>{
+    joystickActive=true;
+    const t=event.touches[0];
+    lastTouchX=t.clientX;
+    lastTouchY=t.clientY;
+    startAudio();
+    event.preventDefault();
+  },
+  {passive:false}
+);
+joystick.addEventListener(
+  "touchmove",
+  event=>{
+    if(!joystickActive) return;
+    const t=event.touches[0];
+    let dx=t.clientX-lastTouchX;
+    let dy=t.clientY-lastTouchY;
+    const max=28;
+    dx=Math.max(-max,Math.min(max,dx));
+    dy=Math.max(-max,Math.min(max,dy));
+    knob.style.transform =
+      `translate(${dx}px,${dy}px)`;
+    move(dx*.72,dy*.72);
+    lastTouchX=t.clientX;
+    lastTouchY=t.clientY;
+    event.preventDefault();
+  },
+  {passive:false}
+);
+function stopJoystick(){
+  joystickActive=false;
+  knob.style.transform=
+    "translate(0,0)";
+}
+joystick.addEventListener(
+  "touchend",
+  stopJoystick,
+  {passive:true}
+);
+joystick.addEventListener(
+  "touchcancel",
+  stopJoystick,
+  {passive:true}
+);
+/* ---------- TASTIERA ---------- */
+document.addEventListener("keydown",event=>{
+  const speed=24;
+  if(event.key==="ArrowUp" || event.key==="w")
+    move(0,-speed);
+  if(event.key==="ArrowDown" || event.key==="s")
+    move(0,speed);
+  if(event.key==="ArrowLeft" || event.key==="a")
+    move(-speed,0);
+  if(event.key==="ArrowRight" || event.key==="d")
+    move(speed,0);
+  if(event.key==="e")
+    interactButton.click();
+  if(event.key==="f")
+    toggleTorch();
 });
+/* ---------- START ---------- */
+startButton.addEventListener("click",()=>{
+  gameStarted=true;
+  startAudio();
+  if(audioContext &&
+     audioContext.state==="suspended"){
+    audioContext.resume();
+  }
+  startScreen.style.opacity="0";
+  setTimeout(()=>{
+    startScreen.style.display="none";
+  },1500);
+  say(
+    "27 anni dopo...",
+    2600
+  );
+  setTimeout(()=>{
+    say(
+      "Il telefono di tuo fratello è ancora acceso.",
+      3200
+    );
+  },3000);
+});
+/* ---------- RESTART ---------- */
+restart.addEventListener("click",()=>{
+  location.reload();
+});
+/* ---------- LOOP ---------- */
+function loop(time){
+  const dt=
+    Math.min(
+      .05,
+      (time-lastTime)/1000
+    );
+  lastTime=time;
+  /* Leggero movimento atmosferico */
+  if(gameStarted){
+    const drift=
+      Math.sin(time*.00025)*1.5;
+    torchLight.style.transform=
+      `translate(calc(-50% + ${drift}px),
+                 -50%)`;
+  }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+/* ---------- STATO INIZIALE ---------- */
+torchLight.style.opacity="1";
+interactButton.style.display="none";
+note.style.display="none";
+creature.style.opacity="0";
 </script>
 </body>
 </html>
