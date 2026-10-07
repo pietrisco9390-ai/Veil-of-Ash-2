@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Veil of Ash</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{
+  margin:0;width:100%;height:100%;overflow:hidden;
+  background:#030506;color:#eee;
+  font-family:Georgia,serif;
+}
+body{touch-action:none}
+#game{
+  position:fixed;inset:0;
+  width:100%;height:100%;
+  background:
+    radial-gradient(circle at 50% 45%,#26302c 0%,#101614 38%,#030506 100%);
+}
+#fog{
+  position:absolute;inset:-20%;
+  background:
+    radial-gradient(ellipse at 40% 50%,rgba(190,210,205,.12),transparent 35%),
+    radial-gradient(ellipse at 70% 30%,rgba(150,170,165,.08),transparent 30%);
+  animation:fog 12s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+@keyframes fog{
+  from{transform:translateX(-3%)}
+  to{transform:translateX(4%)}
+}
+#vignette{
+  position:absolute;inset:0;
+  pointer-events:none;
+  background:radial-gradient(circle,transparent 25%,rgba(0,0,0,.82) 100%);
+}
+#title{
+  position:absolute;
+  top:24px;left:0;width:100%;
+  text-align:center;
+  letter-spacing:7px;
+  font-size:12px;
+  opacity:.65;
+}
+#objective{
+  position:absolute;
+  left:20px;bottom:25px;
+  font-size:14px;
+  text-shadow:0 2px 8px #000;
+  max-width:75%;
+}
+#message{
+  position:absolute;
+  top:16%;
+  left:50%;
+  transform:translateX(-50%);
+  width:85%;
+  text-align:center;
+  font-size:20px;
+  line-height:1.5;
+  opacity:0;
+  transition:opacity 1s;
+  text-shadow:0 2px 15px #000;
+}
+#start{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.72);
+  z-index:20;
+  transition:opacity 1.5s;
+}
+#start h1{
+  margin:0;
+  font-size:36px;
+  letter-spacing:9px;
+  font-weight:400;
+}
+#start p{
+  margin:15px 0 45px;
+  font-size:12px;
+  letter-spacing:4px;
+  opacity:.55;
+}
+button{
+  border:1px solid #aaa8;
+  background:#090c0cdd;
+  color:#eee;
+  padding:15px 30px;
+  border-radius:4px;
+  font:inherit;
+  letter-spacing:3px;
+}
+#touch{
+  position:absolute;
+  right:20px;
+  bottom:25px;
+  width:110px;height:110px;
+  border:1px solid #ffffff25;
+  border-radius:50%;
+  background:#0003;
+  z-index:5;
+}
+#knob{
+  position:absolute;
+  width:42px;height:42px;
+  left:34px;top:34px;
+  border-radius:50%;
+  background:#ffffff25;
+}
+#interact{
+  position:absolute;
+  right:30px;
+  bottom:155px;
+  width:58px;height:58px;
+  border-radius:50%;
+  border:1px solid #ffffff44;
+  background:#050707aa;
+  color:#fff;
+  font-size:20px;
+  display:none;
+}
+#flash{
+  position:absolute;inset:0;
+  background:#fff;
+  opacity:0;
+  pointer-events:none;
+}
+#shadow{
+  position:absolute;
+  width:42px;height:125px;
+  background:rgba(0,0,0,.7);
+  border-radius:50%;
+  left:72%;top:31%;
+  opacity:0;
+  filter:blur(3px);
+  animation:shadowMove 5s infinite ease-in-out;
+}
+@keyframes shadowMove{
+  0%,100%{transform:translateX(0) scale(.9)}
+  50%{transform:translateX(-35px) scale(1.05)}
+}
+.house{
+  position:absolute;
+  width:180px;height:120px;
+  left:50%;top:43%;
+  transform:translate(-50%,-50%);
+  background:#151817;
+  border:1px solid #323836;
+  box-shadow:0 0 50px #000;
+}
+.house:before{
+  content:"";
+  position:absolute;
+  left:-20px;top:-65px;
+  border-left:110px solid transparent;
+  border-right:110px solid transparent;
+  border-bottom:70px solid #0d1010;
+}
+.window{
+  position:absolute;
+  width:34px;height:40px;
+  top:35px;
+  background:#968e68;
+  box-shadow:0 0 20px #aaa36a;
+}
+.w1{left:25px}
+.w2{right:25px}
+.door{
+  position:absolute;
+  bottom:0;left:72px;
+  width:36px;height:65px;
+  background:#080909;
+}
+.note{
+  position:absolute;
+  width:16px;height:10px;
+  background:#d7d0b0;
+  left:62%;top:57%;
+  box-shadow:0 0 12px #aaa;
+  opacity:0;
+}
+#ending{
+  position:absolute;inset:0;
+  background:#000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  z-index:30;
+  text-align:center;
+  padding:30px;
+}
+#ending h2{
+  font-weight:400;
+  letter-spacing:5px;
+}
+#ending p{
+  max-width:400px;
+  line-height:1.7;
+  opacity:.7;
+}
+</style>
+</head>
+<body>
+<div id="game">
+  <div id="title">VEIL OF ASH</div>
+  <div class="house">
+    <div class="window w1"></div>
+    <div class="window w2"></div>
+    <div class="door"></div>
+  </div>
+  <div class="note"></div>
+  <div id="shadow"></div>
+  <div id="fog"></div>
+  <div id="vignette"></div>
+  <div id="message"></div>
+  <div id="objective">
+    Raggiungi la casa.
+  </div>
+  <div id="touch">
+    <div id="knob"></div>
+  </div>
+  <button id="interact">◉</button>
+  <div id="flash"></div>
+</div>
+<div id="start">
+  <h1>VEIL OF ASH</h1>
+  <p>CAPITOLO I · LA CASA</p>
+  <button id="startBtn">TOCCA PER INIZIARE</button>
+</div>
+<div id="ending">
+  <h2>NON RISPONDERE</h2>
+  <p>
+    Elena si volta lentamente.<br><br>
+    La voce arriva dalla foresta.
+    È la voce di suo fratello.
+    <br><br>
+    Ma suo fratello è morto da sette anni.
+  </p>
+</div>
+<script>
+const objective=document.getElementById("objective");
+const message=document.getElementById("message");
+const start=document.getElementById("start");
+const startBtn=document.getElementById("startBtn");
+const touch=document.getElementById("touch");
+const knob=document.getElementById("knob");
+const interact=document.getElementById("interact");
+const shadow=document.getElementById("shadow");
+const note=document.querySelector(".note");
+const flash=document.getElementById("flash");
+const ending=document.getElementById("ending");
+let started=false;
+let stage=0;
+let x=0,y=0;
+let touching=false;
+let lastX=0,lastY=0;
+function say(text,time=3000){
+  message.innerHTML=text.replace(/\n/g,"<br>");
+  message.style.opacity=1;
+  setTimeout(()=>message.style.opacity=0,time);
+}
+function startGame(){
+  started=true;
+  start.style.opacity=0;
+  setTimeout(()=>start.remove(),1500);
+  say("27 anni dopo…",2500);
+}
+startBtn.addEventListener("click",startGame);
+function move(dx,dy){
+  if(!started)return;
+  x+=dx;
+  y+=dy;
+  const distance=Math.sqrt(x*x+y*y);
+  if(stage===0 && distance>140){
+    stage=1;
+    objective.textContent="La porta è aperta. Entra.";
+    interact.style.display="block";
+    say("La porta è già aperta.",3000);
+  }
+  if(stage===1 && distance>260){
+    stage=2;
+    interact.style.display="none";
+    objective.textContent="Trova qualcosa che apparteneva a tuo fratello.";
+    note.style.opacity=1;
+    say("Dentro la casa senti un rumore al piano superiore.",3500);
+  }
+  if(stage===2 && distance>390){
+    stage=3;
+    objective.textContent="Esamina il foglio.";
+    interact.style.display="block";
+    shadow.style.opacity=.35;
+    say("Qualcuno ti sta osservando.",3500);
+  }
+}
+touch.addEventListener("touchstart",e=>{
+  touching=true;
+  const t=e.touches[0];
+  lastX=t.clientX;
+  lastY=t.clientY;
+},{passive:true});
+touch.addEventListener("touchmove",e=>{
+  if(!touching)return;
+  const t=e.touches[0];
+  const dx=t.clientX-lastX;
+  const dy=t.clientY-lastY;
+  knob.style.transform=`translate(${Math.max(-28,Math.min(28,dx))}px,
+    ${Math.max(-28,Math.min(28,dy))}px)`;
+  move(dx*.65,dy*.65);
+  lastX=t.clientX;
+  lastY=t.clientY;
+},{passive:true});
+touch.addEventListener("touchend",()=>{
+  touching=false;
+  knob.style.transform="translate(0,0)";
+});
+interact.addEventListener("click",()=>{
+  if(stage===1){
+    stage=2;
+    interact.style.display="none";
+    note.style.opacity=1;
+    objective.textContent="Trova il foglio sul tavolo.";
+    say("La casa odora di cenere.",3000);
+  }
+  else if(stage===3){
+    stage=4;
+    interact.style.display="none";
+    flash.style.opacity=.8;
+    setTimeout(()=>{
+      flash.style.opacity=0;
+      shadow.style.opacity=.85;
+      objective.textContent="NON RISPONDERE.";
+      say("«Elena…»",2200);
+    },500);
+    setTimeout(()=>{
+      ending.style.display="flex";
+    },5000);
+  }
+});
+document.addEventListener("keydown",e=>{
+  const s=25;
+  if(e.key==="ArrowUp"||e.key==="w")move(0,-s);
+  if(e.key==="ArrowDown"||e.key==="s")move(0,s);
+  if(e.key==="ArrowLeft"||e.key==="a")move(-s,0);
+  if(e.key==="ArrowRight"||e.key==="d")move(s,0);
+});
+</script>
+</body>
+</html>
